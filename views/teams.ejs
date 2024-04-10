@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Team <%= team.name %> Message Site</h1>
+    <button class="btn">Create Message</button>
+    <form
+      action="/api/dash/teams/<%= team.id %>/messages"
+      style="display: none"
+      class="form"
+      method="post"
+    >
+      <input
+        type="textarea"
+        name="content"
+        id="textarea"
+        placeholder="enter your msg"
+      />
+      <button type="submit" class="submit">Submit</button>
+    </form>
+    <% if (team.admin_id === user.id) { %>
+    <button class="btn">Add user</button>
+    <% } %>
+    <form
+      action="/api/dash/addUser/<%=team.id %>"
+      style="display: none"
+      class="form"
+      method="post"
+    >
+      <input
+        type="textarea"
+        name="email"
+        id="textarea"
+        placeholder="enter the user's email"
+      />
+      <button type="submit" class="submit">Submit</button>
+    </form>
+    <% if (team.admin_id === user.id) { %>
+    <form
+      class="form"
+      method="POST"
+      action="/api/dash/teams/<%=team.id%>?_method=DELETE"
+    >
+      <button
+        type="submit"
+        class="btn"
+        onclick="return confirm('Are you sure you want to delete this team?')"
+      >
+        Delete Team
+      </button>
+    </form>
+    <% } %>
+    <div>
+      <ol>
+        <% messages.forEach(message => { %>
+        <li>
+          <strong>Sent By:</strong> <%= message.sendername %><br />
+          <strong>Content:</strong> <%= message.content %>
+          </li>
+          <%if(message.user_id === user.id||team.admin_id===user.id) { %>
+          <button class="btnEdit">Edit</button>
+          <form
+          class="formEdit"
+          style="display: none;"
+          method="POST"
+          action="/api/dash/teams/<%=team.id%>/<%=message.id%>?_method=PATCH"
+    >
+    <input type="text" name="content" placeholder="new msg">
+    <button type="submit" class="submit">Submit</button>
+          </form>
+          <form 
+          method="POST"
+          action="/api/dash/teams/<%=team.id%>/<%=message.id%>?_method=DELETE">
+          <button type="submit" class="btnDel" onclick="return confirm('Are you sure you want to delete this msg?')">Del</button>
+          </form>
+            <%}%>
+         <% }) %>
+      </ol>
+    </div>
+
+    <% if (currentPage > 1) { %>
+      <a
+        href="/api/dash/teams/<%= team.id %>/messages?page=<%= currentPage - 1 %>"
+        >Previous</a
+      >
+    <% } %> 
+    <% if (currentPage < totalPages) { %>
+      <a
+        href="/api/dash/teams/<%= team.id %>/messages?page=<%= currentPage + 1 %>"
+        >Next</a
+      >
+    <% } %>
+
+    <form action="/api/dash/" method="get">
+      <button type="submit">back</button>
+    </form>
+
+    <script>
+      const btns = document.getElementsByClassName("btn");
+      for (let i = 0; i < btns.length; i++) {
+        btns[i].addEventListener("click", () => {
+          const form = document.getElementsByClassName("form")[i];
+          form.style.display = "block";
+        });
+      }
+
+      const btnEdits = document.querySelectorAll(".btnEdit");
+      const formEdits = document.querySelectorAll(".formEdit");
+  
+     for (let i = 0; i < btnEdits.length; i++) {
+        btnEdits[i].addEventListener("click", () => {
+          formEdits[i].style.display = "block";
+        });
+     }
+    </script>
+  </body>
+</html>

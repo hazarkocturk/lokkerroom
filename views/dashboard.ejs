@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>hello <%=user.nickname %></h1>
+    <ul>
+        <li><a href="#" id="teams">Teams</a></li> 
+        <li><a href="/api/dash/direct-messages/messages" id="createdirectmessages">Direct Messages</a></li>
+        <li><a href="/api/dash/createteam" id="createAteam">Create a Team</a></li>
+    </ul>
+    <div class="box" style="display: none; border: 1px solid black;"></div>
+    <form action="/api/dash/teams/logout" method="get">
+        <button type="submit">logout</button>
+    </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const teamsLink = document.getElementById('teams');
+  const box = document.querySelector('.box');
+
+  teamsLink.addEventListener('click', async function(event) {
+    event.preventDefault(); 
+
+    try {
+      const response = await fetch('/api/dash/teams');
+      const teams = await response.json(); 
+      
+      box.innerHTML = ''; 
+
+      teams.forEach(team => {
+        const teamNameElement = document.createElement('ul');
+        const teamElement = document.createElement('li');
+        const teamLink = document.createElement('a');
+        teamLink.textContent = team.name;
+        teamLink.setAttribute('href', `/api/dash/teams/${team.id}/messages`);
+        box.appendChild(teamNameElement);
+        teamNameElement.appendChild(teamElement);
+        teamElement.appendChild(teamLink);
+      });
+
+      box.style.display = 'block'; 
+    } catch (error) {
+      console.error(error);
+    }
+  });
+});
+
+
+
+</script>
+
+</body>
+</html>

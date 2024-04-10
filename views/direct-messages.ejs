@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Direct Message</h1>
+    <form
+      action="/api/dash/direct-messages"
+      style="display: block"
+      id="form"
+      method="post"
+    >
+      <input
+        type="textarea"
+        name="content"
+        id="textarea"
+        placeholder="Your msg"
+      /><br />
+      <input
+        type="text"
+        name="receivername"
+        id="receivername"
+        placeholder="receivername"
+      /><br />
+      <button type="submit" id="submit">Submit</button>
+    </form>
+
+    <div>
+      <ul>
+        <%messages.forEach(message => { %>
+        <li>
+          <strong>Sent By:</strong> <%= message.sendername %><br />
+          <strong>To:</strong> <%= message.receivername %><br />
+          <strong>Content:</strong> <%= message.content %><br />
+        </li>
+        <%if(message.senderId  === user.id){%>
+            <button class="btnEdit">Edit</button>
+            <form
+            class="formEdit"
+            style="display: none;"
+            method="POST"
+            action="/api/dash/direct-messages/messages/<%=message.id%>?_method=PATCH">
+            <input type="text" name="content" placeholder="new msg">
+            <button type="submit" class="submit">Submit</button>
+        </form>
+        <form 
+          method="POST"
+          action="/api/dash/direct-messages/messages/<%=message.id%>?_method=DELETE">
+          <button type="submit" class="btnDel" onclick="return confirm('Are you sure you want to delete this msg?')">Del</button>
+          </form>
+            <%}%>
+
+        <% }); %>
+      </ul>
+    </div>
+    <% if (currentPage > 1) { %>
+        <a
+          href="/api/dash/direct-messages/messages?page=<%= currentPage - 1 %>"
+          >Previous</a>
+          <% } %> 
+          <% if (currentPage < totalPages) { %>
+        <a
+        href="/api/dash/direct-messages/messages?page=<%= currentPage + 1 %>"
+        >Next</a>
+        <% } %>
+
+    <form action="/api/dash/" method="get">
+        <button type="submit">back</button>
+      </form>
+
+<script>
+
+   const btnEdit = document.querySelectorAll(".btnEdit");
+    const formEdit = document.querySelectorAll(".formEdit");
+
+    btnEdit.forEach((btn, index) => {
+
+        btn.addEventListener("click", () => {
+            formEdit[index].style.display = formEdit[index].style.display === "block" ? "none" : "block";
+        });
+    });
+    </script>
+
+  </body>
+</html>
